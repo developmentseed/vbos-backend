@@ -10,6 +10,7 @@ class Common(Configuration):
 
     INSTALLED_APPS = (
         "django.contrib.admin",
+        "django.contrib.gis",
         "django.contrib.auth",
         "django.contrib.contenttypes",
         "django.contrib.sessions",
@@ -18,15 +19,20 @@ class Common(Configuration):
         # Third party apps
         "rest_framework",  # utilities for rest apis
         "rest_framework.authtoken",  # token authentication
+        "rest_framework_gis",
+        "drf_spectacular",  # api-docs
         "django_filters",  # for filtering rest endpoints
+        "corsheaders",
         # Your apps
         "vbos.users",
+        "vbos.datasets",
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
     MIDDLEWARE = (
         "django.middleware.security.SecurityMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
+        "corsheaders.middleware.CorsMiddleware",
         "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -47,7 +53,9 @@ class Common(Configuration):
     # Postgres
     DATABASES = {
         "default": dj_database_url.config(
-            default="postgis://postgres:@postgres:5432/vbos",
+            default=os.getenv(
+                "DJANGO_DB_URL", "postgis://postgres:@postgres:5432/vbos"
+            ),
             conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
         )
     }
@@ -187,4 +195,12 @@ class Common(Configuration):
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
+        "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    }
+
+    SPECTACULAR_SETTINGS = {
+        "TITLE": "VBOS-API",
+        "DESCRIPTION": "VBoS Management Information System API",
+        "VERSION": "1.0.0",
+        "SERVE_INCLUDE_SCHEMA": False,
     }

@@ -1,21 +1,16 @@
-FROM python:3.13-slim as base
-FROM base as builder
+FROM ubuntu:24.04
+ARG DEBIAN_FRONTEND=noninteractive
 
-# Allows docker to cache installed dependencies between builds
-RUN apt-get update && apt-get -y install libpq-dev gcc
+RUN apt-get update -qq -y \
+    && apt-get install -y binutils libproj-dev python3-gdal libgeos-dev libyaml-dev python3-pip \
+    && apt-get clean \
 COPY ./requirements.txt requirements.txt
-RUN pip3 install --no-cache-dir --target=packages -r requirements.txt
+RUN pip install --no-cache-dir --target=packages -r requirements.txt
 
-FROM base as runtime
-COPY --from=builder packages /usr/lib/python3.12/site-packages
-ENV PYTHONPATH=/usr/lib/python3.12/site-packages
-
-# Security Context 
-RUN useradd -m nonroot
-USER nonroot
-
-COPY . code
-WORKDIR code
+COPY . /app
+RUN useradd django
+RUN chown -R django:django /app
+WORKDIR /app
 
 EXPOSE 8000
 # Run the production server

@@ -1,7 +1,19 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from .models import VectorDataset, VectorItem
+from .models import (
+    RasterDataset,
+    TabularDataset,
+    TabularItem,
+    VectorDataset,
+    VectorItem,
+)
+
+
+class RasterDatasetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RasterDataset
+        fields = "__all__"
 
 
 class VectorDatasetSerializer(serializers.ModelSerializer):
@@ -30,3 +42,47 @@ class VectorItemSerializer(GeoFeatureModelSerializer):
             attrs[self.Meta.bbox_geo_field] = Polygon.from_bbox(feature["bbox"])
 
         return attrs
+
+
+class TabularDatasetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TabularDataset
+        fields = "__all__"
+
+
+class TabularItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TabularItem
+        fields = ["id", "data"]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Extract the data field and merge it with the top level fields
+        data_content = representation.pop("data", {})
+
+        return {**representation, **data_content}
+
+
+class TabularItemExcelSerializer(serializers.ModelSerializer):
+    # Dynamically add fields based on all possible keys in the data
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Get all possible keys from the queryset
+        if self.context.get("view"):
+            queryset = self.context["view"].get_queryset()
+            all_keys = set()
+            for item in queryset:
+                if item.data and isinstance(item.data, dict):
+                    all_keys.update(item.data.keys())
+
+            # Create a field for each key
+            for key in all_keys:
+                self.fields[key] = serializers.CharField(
+                    source=f"data.{key}", required=False, allow_blank=True, default=""
+                )
+
+    class Meta:
+        model = TabularItem
+        fields = ["id"]

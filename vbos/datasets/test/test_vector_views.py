@@ -4,12 +4,10 @@ from django.urls import reverse
 from django.contrib.gis.geos import Polygon, LineString, Point
 
 from ..models import VectorDataset, VectorItem
-from ...users.test.factories import UserFactory
 
 
 class TestVectorDatasetListDetailViews(APITestCase):
     def setUp(self):
-        self.user = UserFactory()
         self.dataset_1 = VectorDataset.objects.create(name="Boundaries")
         self.dataset_2 = VectorDataset.objects.create(name="Roads")
         self.url = reverse("datasets:vector-list")
@@ -32,7 +30,6 @@ class TestVectorDatasetListDetailViews(APITestCase):
 
 class TestVectorDatasetDataView(APITestCase):
     def setUp(self):
-        self.user = UserFactory()
         self.dataset_1 = VectorDataset.objects.create(name="Boundaries")
         self.dataset_2 = VectorDataset.objects.create(name="Roads")
         VectorItem.objects.create(
@@ -76,3 +73,14 @@ class TestVectorDatasetDataView(APITestCase):
                 [[0.0, 0.0], [0.0, 3.0], [3.0, 3.0], [3.0, 0.0], [0.0, 0.0]]
             ],
         }
+
+    def test_filters(self):
+        req = self.client.get(self.url, {"in_bbox": "80,10,81,11"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+        assert len(req.data.get("features")) == 1
+        assert req.data.get("features")[0]["geometry"] == {
+            "type": "Point",
+            "coordinates": [80.5, 10.232],
+        }
+        assert req.data.get("features")[0]["properties"]["name"] == "Point 1"

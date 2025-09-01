@@ -91,7 +91,9 @@ class TabularItemAdmin(admin.GISModelAdmin):
                         )
 
                     if error_count > 0:
-                        messages.warning(request, f"Failed to create {error_count} items.")
+                        messages.warning(
+                            request, f"Failed to create {error_count} items."
+                        )
 
                 except Exception as e:
                     messages.error(request, f"Error processing CSV: {str(e)}")

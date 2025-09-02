@@ -1,0 +1,66 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Area 1"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              167.59888,
+              -16.28524
+            ],
+            [
+              167.59888,
+              -16.35415
+            ],
+            [
+              167.65928,
+              -16.35415
+            ],
+            [
+              167.65928,
+              -16.28524
+            ],
+            [
+              167.59888,
+              -16.28524
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Line 1", "col": "val"},
+      "geometry": {
+        "coordinates": [
+          [
+            167.471331,
+            -16.249016
+          ],
+          [
+            167.500713,
+            -16.372577
+          ]
+        ],
+        "type": "LineString"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Point 1", "source": "OpenStreetMap"},
+      "geometry": {
+        "coordinates": [
+          167.72470,
+          -16.39183
+        ],
+        "type": "Point"
+      }
+    }
+  ]
+}

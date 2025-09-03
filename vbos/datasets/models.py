@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.core.validators import FileExtensionValidator
 from django.db.models.fields.files import default_storage
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -7,7 +8,14 @@ from django.dispatch import receiver
 class RasterFile(models.Model):
     name = models.CharField(max_length=155)
     created = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to="raster/")
+    file = models.FileField(
+        upload_to="raster/",
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=["tiff", "tif", "geotiff", "gtiff"]
+            )
+        ],
+    )
 
     def __str__(self):
         return self.name

@@ -54,6 +54,7 @@ coverage.xml
 *.log
 .static_storage/
 .media/
+.media/raster/*
 local_settings.py
 
 # Flask stuff:

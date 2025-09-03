@@ -54,7 +54,7 @@ class Common(Configuration):
     DATABASES = {
         "default": dj_database_url.config(
             default=os.getenv(
-                "DJANGO_DB_URL", "postgis://postgres:@postgres:5432/vbos"
+                "DJANGO_DB_URL", "postgis://postgres:postgres@postgres:5432/vbos"
             ),
             conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
         )

@@ -10,6 +10,7 @@ from django.urls import path
 
 from .models import (
     RasterDataset,
+    RasterFile,
     TabularDataset,
     TabularItem,
     VectorDataset,
@@ -18,9 +19,14 @@ from .models import (
 from .forms import CSVUploadForm, GeoJSONUploadForm
 
 
+@admin.register(RasterFile)
+class RasterFileAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "created", "file"]
+
+
 @admin.register(RasterDataset)
 class RasterDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "created", "updated", "file_path"]
+    list_display = ["id", "name", "created", "updated", "file"]
 
 
 @admin.register(VectorDataset)

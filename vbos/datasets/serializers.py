@@ -11,9 +11,11 @@ from .models import (
 
 
 class RasterDatasetSerializer(serializers.ModelSerializer):
+    file = serializers.ReadOnlyField(source="file.file.url")
+
     class Meta:
         model = RasterDataset
-        fields = "__all__"
+        fields = ["id", "name", "created", "updated", "file"]
 
 
 class VectorDatasetSerializer(serializers.ModelSerializer):

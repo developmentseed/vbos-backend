@@ -2,16 +2,20 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.urls import reverse
 
-from ..models import RasterDataset
+from ..models import RasterDataset, RasterFile
 
 
 class TestRasterDatasetListDetailViews(APITestCase):
     def setUp(self):
-        self.dataset_1 = RasterDataset.objects.create(
-            name="Rainfall", file_path="cogs/rainfall.tiff"
+        self.r_1 = RasterFile.objects.create(
+            name="Rainfall COG", file="raster/rainfall.tiff"
         )
+        self.r_2 = RasterFile.objects.create(
+            name="Coastline COG", file="raster/coastline.tiff"
+        )
+        self.dataset_1 = RasterDataset.objects.create(name="Rainfall", file=self.r_1)
         self.dataset_2 = RasterDataset.objects.create(
-            name="Coastline changes", file_path="cogs/coastlines.tiff"
+            name="Coastline changes", file=self.r_2
         )
         self.url = reverse("datasets:raster-list")
 
@@ -27,6 +31,6 @@ class TestRasterDatasetListDetailViews(APITestCase):
         req = self.client.get(url)
         assert req.status_code == status.HTTP_200_OK
         assert req.data.get("name") == "Rainfall"
-        assert req.data.get("file_path") == "cogs/rainfall.tiff"
+        assert req.data.get("file") == "/media/raster/rainfall.tiff"
         assert req.data.get("created")
         assert req.data.get("updated")

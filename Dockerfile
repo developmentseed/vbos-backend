@@ -1,11 +1,11 @@
-FROM ubuntu:24.04
+FROM python:3.13-slim-bookworm
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -qq -y \
-    && apt-get install -y binutils libproj-dev python3-gdal libgeos-dev libyaml-dev python3-pip \
-    && apt-get clean \
+    && apt-get install -y binutils libproj-dev python3-gdal libgeos-dev libyaml-dev postgresql-client libpq-dev python3 python3-dev python3-pip \
+    && apt-get clean
 COPY ./requirements.txt requirements.txt
-RUN pip install --no-cache-dir --target=packages -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . /app
 RUN useradd django

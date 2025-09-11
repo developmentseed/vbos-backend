@@ -8,6 +8,16 @@ from django.dispatch import receiver
 UPLOAD_TO = "staging/raster/" if settings.DEBUG else "production/raster/"
 
 
+class Cluster(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
 class RasterFile(models.Model):
     name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -43,6 +53,11 @@ class RasterDataset(models.Model):
     name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    cluster = models.ForeignKey(
+        Cluster,
+        on_delete=models.PROTECT,
+    )
+    source = models.CharField(max_length=155, blank=True, null=True)
     file = models.ForeignKey(RasterFile, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -56,6 +71,11 @@ class VectorDataset(models.Model):
     name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    cluster = models.ForeignKey(
+        Cluster,
+        on_delete=models.PROTECT,
+    )
+    source = models.CharField(max_length=155, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -80,6 +100,11 @@ class TabularDataset(models.Model):
     name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    cluster = models.ForeignKey(
+        Cluster,
+        on_delete=models.PROTECT,
+    )
+    source = models.CharField(max_length=155, blank=True, null=True)
 
     def __str__(self):
         return self.name

@@ -3,13 +3,19 @@ from rest_framework.test import APITestCase
 from django.urls import reverse
 from django.contrib.gis.geos import Polygon, LineString, Point
 
-from ..models import VectorDataset, VectorItem
+from ..models import VectorDataset, VectorItem, Cluster
 
 
 class TestVectorDatasetListDetailViews(APITestCase):
     def setUp(self):
-        self.dataset_1 = VectorDataset.objects.create(name="Boundaries")
-        self.dataset_2 = VectorDataset.objects.create(name="Roads")
+        self.dataset_1 = VectorDataset.objects.create(
+            name="Boundaries",
+            cluster=Cluster.objects.create(name="Administrative"),
+            source="OSM",
+        )
+        self.dataset_2 = VectorDataset.objects.create(
+            name="Roads", cluster=Cluster.objects.create(name="Transportation")
+        )
         self.url = reverse("datasets:vector-list")
 
     def test_vector_datasets_list(self):
@@ -19,6 +25,15 @@ class TestVectorDatasetListDetailViews(APITestCase):
         assert req.data.get("results")[0]["name"] == "Boundaries"
         assert req.data.get("results")[1]["name"] == "Roads"
 
+    def test_vector_datasets_list_filter(self):
+        req = self.client.get(self.url, {"cluster": "transportation"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+
+        req = self.client.get(self.url, {"cluster": "administrative"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+
     def test_vector_datasets_detail(self):
         url = reverse("datasets:vector-detail", args=[self.dataset_1.id])
         req = self.client.get(url)
@@ -26,12 +41,18 @@ class TestVectorDatasetListDetailViews(APITestCase):
         assert req.data.get("name") == "Boundaries"
         assert req.data.get("created")
         assert req.data.get("updated")
+        assert req.data.get("cluster") == "Administrative"
+        assert req.data.get("source") == "OSM"
 
 
 class TestVectorDatasetDataView(APITestCase):
     def setUp(self):
-        self.dataset_1 = VectorDataset.objects.create(name="Boundaries")
-        self.dataset_2 = VectorDataset.objects.create(name="Roads")
+        self.dataset_1 = VectorDataset.objects.create(
+            name="Boundaries", cluster=Cluster.objects.create(name="Administrative")
+        )
+        self.dataset_2 = VectorDataset.objects.create(
+            name="Roads", cluster=Cluster.objects.create(name="Transportation")
+        )
         VectorItem.objects.create(
             dataset=self.dataset_1,
             geometry=Point(80.5, 10.232),

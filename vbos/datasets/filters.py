@@ -7,11 +7,17 @@ from django_filters import (
     ModelChoiceFilter,
 )
 
-from .models import RasterDataset, VectorDataset, TabularDataset
+from .models import RasterDataset, VectorDataset, TabularDataset, Cluster
 
 
 class DatasetFilter(FilterSet):
     name = CharFilter(field_name="name", lookup_expr="icontains")
+    source = CharFilter(field_name="source", lookup_expr="icontains")
+    cluster = ModelChoiceFilter(
+        field_name="cluster__name",
+        to_field_name="name__iexact",
+        queryset=Cluster.objects.all(),
+    )
     created = DateFromToRangeFilter()
     updated = DateFromToRangeFilter()
     order_by = OrderingFilter(
@@ -22,16 +28,16 @@ class DatasetFilter(FilterSet):
 class RasterDatasetFilter(DatasetFilter):
     class Meta:
         model = RasterDataset
-        fields = ["name", "created", "updated"]
+        fields = ["name", "source", "cluster", "created", "updated"]
 
 
 class VectorDatasetFilter(DatasetFilter):
     class Meta:
         model = VectorDataset
-        fields = ["name", "created", "updated"]
+        fields = ["name", "source", "cluster", "created", "updated"]
 
 
 class TabularDatasetFilter(DatasetFilter):
     class Meta:
         model = TabularDataset
-        fields = ["name", "created", "updated"]
+        fields = ["name", "source", "cluster", "created", "updated"]

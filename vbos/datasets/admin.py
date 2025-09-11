@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, reverse
 from django.urls import path
 
 from .models import (
+    Cluster,
     RasterDataset,
     RasterFile,
     TabularDataset,
@@ -19,6 +20,11 @@ from .models import (
 from .forms import CSVUploadForm, GeoJSONUploadForm
 
 
+@admin.register(Cluster)
+class ClusterAdmin(admin.ModelAdmin):
+    list_display = ["id", "name"]
+
+
 @admin.register(RasterFile)
 class RasterFileAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "created", "file"]
@@ -26,12 +32,12 @@ class RasterFileAdmin(admin.ModelAdmin):
 
 @admin.register(RasterDataset)
 class RasterDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "created", "updated", "file"]
+    list_display = ["id", "cluster", "name", "created", "updated", "file"]
 
 
 @admin.register(VectorDataset)
 class VectorDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "created", "updated"]
+    list_display = ["id", "cluster", "name", "created", "updated"]
 
 
 @admin.register(VectorItem)
@@ -111,7 +117,7 @@ class VectorItemAdmin(admin.GISModelAdmin):
 
 @admin.register(TabularDataset)
 class TabularDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "created", "updated"]
+    list_display = ["id", "cluster", "name", "created", "updated"]
 
 
 @admin.register(TabularItem)

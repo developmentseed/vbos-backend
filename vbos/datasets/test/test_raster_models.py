@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 
-from vbos.datasets.models import RasterDataset, RasterFile
+from vbos.datasets.models import Cluster, RasterDataset, RasterFile
 
 
 class TestRasterModels(TestCase):
@@ -15,7 +15,11 @@ class TestRasterModels(TestCase):
         self.r_2 = RasterFile.objects.create(
             name="Coastline COG", file="raster/coastline.tiff"
         )
-        self.dataset = RasterDataset.objects.create(name="Rainfall", file=self.r_1)
+        self.dataset = RasterDataset.objects.create(
+            name="Rainfall",
+            cluster=Cluster.objects.create(name="Environment"),
+            file=self.r_1,
+        )
 
     def test_deletion(self):
         # RasterFile can't be deleted if it's associates with a dataset

@@ -16,7 +16,10 @@ services:
   web:
     restart: always
     environment:
-      - DJANGO_SECRET_KEY=local
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_AWS_ACCESS_KEY_ID=${DJANGO_AWS_ACCESS_KEY_ID}
+      - DJANGO_AWS_SECRET_ACCESS_KEY=${DJANGO_AWS_SECRET_ACCESS_KEY}
+      - DJANGO_AWS_STORAGE_BUCKET_NAME=${DJANGO_AWS_STORAGE_BUCKET_NAME}
     build: ./
     command: >
       bash -c "python3 wait_for_postgres.py &&
@@ -54,5 +57,5 @@ services:
     ports:
       - "8002:8000"
     volumes:
-      - ./data:/data  # Optional: mount local directory with your raster files
+      - ./data:/data # Optional: mount local directory with your raster files
     restart: unless-stopped

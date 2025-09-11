@@ -1,15 +1,19 @@
 from django.contrib.gis.db import models
+from django.conf import settings
 from django.core.validators import FileExtensionValidator
 from django.db.models.fields.files import default_storage
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
+UPLOAD_TO = "staging/raster/" if settings.DEBUG else "production/raster/"
+
 
 class RasterFile(models.Model):
-    name = models.CharField(max_length=155)
+    name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     file = models.FileField(
-        upload_to="raster/",
+        upload_to=UPLOAD_TO,
+        unique=True,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=["tiff", "tif", "geotiff", "gtiff"]
@@ -36,7 +40,7 @@ def delete_raster_file(sender, instance, **kwargs):
 
 
 class RasterDataset(models.Model):
-    name = models.CharField(max_length=155)
+    name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     file = models.ForeignKey(RasterFile, on_delete=models.PROTECT)
@@ -49,7 +53,7 @@ class RasterDataset(models.Model):
 
 
 class VectorDataset(models.Model):
-    name = models.CharField(max_length=155)
+    name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -73,7 +77,7 @@ class VectorItem(models.Model):
 
 
 class TabularDataset(models.Model):
-    name = models.CharField(max_length=155)
+    name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

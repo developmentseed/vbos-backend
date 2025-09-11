@@ -7,7 +7,7 @@ VBOS Django application and data services. Check out the project's [documentatio
 
 # Prerequisites
 
-- [Docker](https://docs.docker.com/docker-for-mac/install/)  
+- [Docker](https://docs.docker.com/docker-for-mac/install/)
 
 # Local Development
 
@@ -21,3 +21,7 @@ Run a command inside the docker container:
 ```bash
 docker-compose run --rm web [command]
 ```
+
+# Configuration
+
+Copy the `.env.example` file to `.env` and edit the variables you need to configure the access to the DigitalOcean Spaces (S3 compatible).

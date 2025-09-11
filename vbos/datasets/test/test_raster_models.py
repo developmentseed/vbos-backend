@@ -4,13 +4,12 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 
 from vbos.datasets.models import RasterDataset, RasterFile
-from genericpath import exists
 
 
 class TestRasterModels(TestCase):
     def setUp(self):
         self.valid_file = SimpleUploadedFile(
-            "rainfall.tif", b"file_content", content_type="image/tiff"
+            "rainfall.tiff", b"file_content", content_type="image/tiff"
         )
         self.r_1 = RasterFile.objects.create(name="Rainfall COG", file=self.valid_file)
         self.r_2 = RasterFile.objects.create(
@@ -22,6 +21,17 @@ class TestRasterModels(TestCase):
         # RasterFile can't be deleted if it's associates with a dataset
         with self.assertRaises(ProtectedError):
             self.r_1.delete()
+
+        # name should be unique
+        raster = RasterFile(name="Rainfall COG 2", file="raster/coastline.tiff")
+        with self.assertRaises(ValidationError):
+            raster.full_clean()
+
+        # file path should be unique
+        raster = RasterFile(name="Rainfall COG", file="newfile.tif")
+        with self.assertRaises(ValidationError):
+            raster.full_clean()
+
         # modify dataset
         self.dataset.file = self.r_2
         self.dataset.save()
@@ -42,3 +52,6 @@ class TestRasterModels(TestCase):
         raster = RasterFile(name="Test", file=invalid_file)
         with self.assertRaises(ValidationError):
             raster.full_clean()
+
+    def tearDown(self):
+        RasterFile.objects.all().delete()

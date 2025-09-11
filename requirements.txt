@@ -20,6 +20,11 @@ drf_spectacular==0.28.0
 django-cors-headers==4.7.0
 drf-excel==2.5.3
 
+# Storage
+django-storages==1.14.6
+boto3==1.40.26
+whitenoise
+
 # Developer Tools
 ipdb==0.13.13
 ipython==8.30.0

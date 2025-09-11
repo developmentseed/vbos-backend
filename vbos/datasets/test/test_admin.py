@@ -4,7 +4,13 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from vbos.datasets.models import TabularDataset, TabularItem, VectorDataset, VectorItem
+from vbos.datasets.models import (
+    Cluster,
+    TabularDataset,
+    TabularItem,
+    VectorDataset,
+    VectorItem,
+)
 
 
 class TabularItemAdminImportFileTests(TestCase):
@@ -14,7 +20,10 @@ class TabularItemAdminImportFileTests(TestCase):
             username="admin", password="password", email="admin@example.com"
         )
         self.client.login(username="admin", password="password")
-        self.dataset = TabularDataset.objects.create(name="Test Dataset")
+        self.cluster = Cluster.objects.create(name="Other")
+        self.dataset = TabularDataset.objects.create(
+            name="Test Dataset", cluster=self.cluster
+        )
         self.upload_url = reverse("admin:datasets_tabularitem_import_file")
 
     def test_change_list_has_link_to_import_file(self):
@@ -68,7 +77,10 @@ class VectorItemAdminImportFileTests(TestCase):
             username="admin", password="password", email="admin@example.com"
         )
         self.client.login(username="admin", password="password")
-        self.dataset = VectorDataset.objects.create(name="Test Dataset")
+        self.cluster = Cluster.objects.create(name="Other")
+        self.dataset = VectorDataset.objects.create(
+            name="Test Dataset", cluster=self.cluster
+        )
         self.upload_url = reverse("admin:datasets_vectoritem_import_file")
 
     def test_change_list_has_link_to_import_file(self):

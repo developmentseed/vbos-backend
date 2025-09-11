@@ -2,15 +2,23 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.urls import reverse
 
-from ..models import TabularDataset, TabularItem
+from ..models import Cluster, TabularDataset, TabularItem
 from ...users.test.factories import UserFactory
 
 
 class TestTabularDatasetListDetailViews(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        self.dataset_1 = TabularDataset.objects.create(name="Population")
-        self.dataset_2 = TabularDataset.objects.create(name="Prices")
+        self.dataset_1 = TabularDataset.objects.create(
+            name="Population",
+            cluster=Cluster.objects.create(name="Administrative"),
+            source="Government",
+        )
+        self.dataset_2 = TabularDataset.objects.create(
+            name="Prices",
+            cluster=Cluster.objects.create(name="Statistics"),
+            source="Government",
+        )
         self.url = reverse("datasets:tabular-list")
 
     def test_tabular_datasets_list(self):
@@ -19,6 +27,22 @@ class TestTabularDatasetListDetailViews(APITestCase):
         assert req.data.get("count") == 2
         assert req.data.get("results")[0]["name"] == "Population"
         assert req.data.get("results")[1]["name"] == "Prices"
+        assert req.data.get("results")[0]["source"] == "Government"
+        assert req.data.get("results")[1]["source"] == "Government"
+        assert req.data.get("results")[0]["cluster"] == "Administrative"
+        assert req.data.get("results")[1]["cluster"] == "Statistics"
+
+    def test_raster_datasets_list_filter(self):
+        req = self.client.get(self.url, {"cluster": "transportation"})
+        assert req.status_code == status.HTTP_400_BAD_REQUEST
+
+        req = self.client.get(self.url, {"cluster": "administrative"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+
+        req = self.client.get(self.url, {"cluster": "statistics"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
 
     def test_tabular_datasets_detail(self):
         url = reverse("datasets:tabular-detail", args=[self.dataset_1.id])
@@ -31,9 +55,14 @@ class TestTabularDatasetListDetailViews(APITestCase):
 
 class TestTabularDatasetDataView(APITestCase):
     def setUp(self):
+        self.cluster = Cluster.objects.create(name="Other")
         self.user = UserFactory()
-        self.dataset_1 = TabularDataset.objects.create(name="Population")
-        self.dataset_2 = TabularDataset.objects.create(name="Employment")
+        self.dataset_1 = TabularDataset.objects.create(
+            name="Population", cluster=self.cluster
+        )
+        self.dataset_2 = TabularDataset.objects.create(
+            name="Employment", cluster=self.cluster
+        )
         self.item = TabularItem.objects.create(
             dataset=self.dataset_1,
             data={"province": "A", "population": 1902, "year": 2025},

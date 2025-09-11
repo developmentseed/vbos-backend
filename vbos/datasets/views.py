@@ -11,6 +11,7 @@ from vbos.datasets.filters import (
 )
 
 from .models import (
+    Cluster,
     RasterDataset,
     TabularDataset,
     TabularItem,
@@ -19,6 +20,7 @@ from .models import (
 )
 from .pagination import StandardResultsSetPagination
 from .serializers import (
+    ClusterSerializer,
     RasterDatasetSerializer,
     TabularDatasetSerializer,
     TabularItemExcelSerializer,
@@ -26,6 +28,13 @@ from .serializers import (
     VectorDatasetSerializer,
     VectorItemSerializer,
 )
+
+
+class ClusterListView(ListAPIView):
+    queryset = Cluster.objects.all()
+    serializer_class = ClusterSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
 
 class RasterDatasetListView(ListAPIView):

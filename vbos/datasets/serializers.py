@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from .models import (
+    Cluster,
     RasterDataset,
     TabularDataset,
     TabularItem,
@@ -10,18 +11,27 @@ from .models import (
 )
 
 
+class ClusterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cluster
+        fields = ["id", "name"]
+
+
 class RasterDatasetSerializer(serializers.ModelSerializer):
     file = serializers.ReadOnlyField(source="file.file.url")
+    cluster = serializers.ReadOnlyField(source="cluster.name")
 
     class Meta:
         model = RasterDataset
-        fields = ["id", "name", "created", "updated", "file"]
+        fields = ["id", "name", "created", "updated", "cluster", "source", "file"]
 
 
 class VectorDatasetSerializer(serializers.ModelSerializer):
+    cluster = serializers.ReadOnlyField(source="cluster.name")
+
     class Meta:
         model = VectorDataset
-        fields = "__all__"
+        fields = ["id", "name", "created", "updated", "cluster", "source"]
 
 
 class VectorItemSerializer(GeoFeatureModelSerializer):
@@ -47,9 +57,11 @@ class VectorItemSerializer(GeoFeatureModelSerializer):
 
 
 class TabularDatasetSerializer(serializers.ModelSerializer):
+    cluster = serializers.ReadOnlyField(source="cluster.name")
+
     class Meta:
         model = TabularDataset
-        fields = "__all__"
+        fields = ["id", "name", "created", "updated", "cluster", "source"]
 
 
 class TabularItemSerializer(serializers.ModelSerializer):

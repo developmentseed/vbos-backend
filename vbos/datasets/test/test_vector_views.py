@@ -14,7 +14,9 @@ class TestVectorDatasetListDetailViews(APITestCase):
             source="OSM",
         )
         self.dataset_2 = VectorDataset.objects.create(
-            name="Roads", cluster=Cluster.objects.create(name="Transportation")
+            name="Roads",
+            cluster=Cluster.objects.create(name="Transportation"),
+            type="estimated_damage",
         )
         self.url = reverse("datasets:vector-list")
 
@@ -24,6 +26,8 @@ class TestVectorDatasetListDetailViews(APITestCase):
         assert req.data.get("count") == 2
         assert req.data.get("results")[0]["name"] == "Boundaries"
         assert req.data.get("results")[1]["name"] == "Roads"
+        assert req.data.get("results")[0]["type"] == "baseline"
+        assert req.data.get("results")[1]["type"] == "estimated_damage"
 
     def test_vector_datasets_list_filter(self):
         req = self.client.get(self.url, {"cluster": "transportation"})

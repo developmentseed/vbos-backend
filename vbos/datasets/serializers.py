@@ -23,7 +23,16 @@ class RasterDatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RasterDataset
-        fields = ["id", "name", "created", "updated", "cluster", "source", "file"]
+        fields = [
+            "id",
+            "name",
+            "created",
+            "updated",
+            "cluster",
+            "type",
+            "source",
+            "file",
+        ]
 
 
 class VectorDatasetSerializer(serializers.ModelSerializer):
@@ -31,7 +40,7 @@ class VectorDatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VectorDataset
-        fields = ["id", "name", "created", "updated", "cluster", "source"]
+        fields = ["id", "name", "created", "updated", "cluster", "type", "source"]
 
 
 class VectorItemSerializer(GeoFeatureModelSerializer):
@@ -61,7 +70,7 @@ class TabularDatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TabularDataset
-        fields = ["id", "name", "created", "updated", "cluster", "source"]
+        fields = ["id", "name", "created", "updated", "cluster", "type", "source"]
 
 
 class TabularItemSerializer(serializers.ModelSerializer):

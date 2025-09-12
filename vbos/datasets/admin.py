@@ -32,17 +32,20 @@ class RasterFileAdmin(admin.ModelAdmin):
 
 @admin.register(RasterDataset)
 class RasterDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "cluster", "name", "created", "updated", "file"]
+    list_display = ["id", "name", "cluster", "type", "updated", "file"]
+    list_filter = ["cluster", "type"]
 
 
 @admin.register(VectorDataset)
 class VectorDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "cluster", "name", "created", "updated"]
+    list_display = ["id", "name", "cluster", "type", "updated"]
+    list_filter = ["cluster", "type"]
 
 
 @admin.register(VectorItem)
 class VectorItemAdmin(admin.GISModelAdmin):
     list_display = ["id", "dataset", "metadata"]
+    list_filter = ["dataset"]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -117,12 +120,14 @@ class VectorItemAdmin(admin.GISModelAdmin):
 
 @admin.register(TabularDataset)
 class TabularDatasetAdmin(admin.ModelAdmin):
-    list_display = ["id", "cluster", "name", "created", "updated"]
+    list_display = ["id", "name", "cluster", "type", "updated"]
+    list_filter = ["cluster", "type"]
 
 
 @admin.register(TabularItem)
 class TabularItemAdmin(admin.GISModelAdmin):
     list_display = ["id", "dataset", "data"]
+    list_filter = ["dataset"]
 
     def get_urls(self):
         urls = super().get_urls()

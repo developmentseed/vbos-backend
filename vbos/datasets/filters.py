@@ -13,6 +13,7 @@ from .models import RasterDataset, VectorDataset, TabularDataset, Cluster
 class DatasetFilter(FilterSet):
     name = CharFilter(field_name="name", lookup_expr="icontains")
     source = CharFilter(field_name="source", lookup_expr="icontains")
+    type = CharFilter(field_name="type", lookup_expr="iexact")
     cluster = ModelChoiceFilter(
         field_name="cluster__name",
         to_field_name="name__iexact",

@@ -18,6 +18,7 @@ class TestTabularDatasetListDetailViews(APITestCase):
             name="Prices",
             cluster=Cluster.objects.create(name="Statistics"),
             source="Government",
+            type="estimated_damage",
         )
         self.url = reverse("datasets:tabular-list")
 
@@ -31,6 +32,8 @@ class TestTabularDatasetListDetailViews(APITestCase):
         assert req.data.get("results")[1]["source"] == "Government"
         assert req.data.get("results")[0]["cluster"] == "Administrative"
         assert req.data.get("results")[1]["cluster"] == "Statistics"
+        assert req.data.get("results")[0]["type"] == "baseline"
+        assert req.data.get("results")[1]["type"] == "estimated_damage"
 
     def test_raster_datasets_list_filter(self):
         req = self.client.get(self.url, {"cluster": "transportation"})

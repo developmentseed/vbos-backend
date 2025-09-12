@@ -15,6 +15,7 @@ TYPE_CHOICES = {
     "estimate_financial_damage": _("Estimate Financial Damage"),
 }
 
+
 class Cluster(models.Model):
     name = models.CharField(max_length=100, unique=True)
 

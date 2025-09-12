@@ -23,7 +23,16 @@ class RasterDatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RasterDataset
-        fields = ["id", "name", "created", "updated", "cluster", "type", "source", "file"]
+        fields = [
+            "id",
+            "name",
+            "created",
+            "updated",
+            "cluster",
+            "type",
+            "source",
+            "file",
+        ]
 
 
 class VectorDatasetSerializer(serializers.ModelSerializer):

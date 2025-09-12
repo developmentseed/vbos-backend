@@ -14,7 +14,9 @@ class TestVectorDatasetListDetailViews(APITestCase):
             source="OSM",
         )
         self.dataset_2 = VectorDataset.objects.create(
-            name="Roads", cluster=Cluster.objects.create(name="Transportation"), type="estimated_damage"
+            name="Roads",
+            cluster=Cluster.objects.create(name="Transportation"),
+            type="estimated_damage",
         )
         self.url = reverse("datasets:vector-list")
 

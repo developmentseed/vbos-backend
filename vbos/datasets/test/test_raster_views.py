@@ -24,6 +24,7 @@ class TestRasterDatasetListDetailViews(APITestCase):
             file=self.r_2,
             source="OSM",
             cluster=Cluster.objects.create(name="Administrative"),
+            type="estimated_damage",
         )
         self.url = reverse("datasets:raster-list")
 
@@ -37,6 +38,8 @@ class TestRasterDatasetListDetailViews(APITestCase):
         assert req.data.get("results")[1]["cluster"] == "Administrative"
         assert req.data.get("results")[0]["source"] == "WMO"
         assert req.data.get("results")[1]["source"] == "OSM"
+        assert req.data.get("results")[0]["type"] == "baseline"
+        assert req.data.get("results")[1]["type"] == "estimated_damage"
 
     def test_raster_datasets_list_filter(self):
         req = self.client.get(self.url, {"cluster": "transportation"})
@@ -47,6 +50,10 @@ class TestRasterDatasetListDetailViews(APITestCase):
         assert req.data.get("count") == 1
 
         req = self.client.get(self.url, {"cluster": "environment"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+
+        req = self.client.get(self.url, {"type": "baseline"})
         assert req.status_code == status.HTTP_200_OK
         assert req.data.get("count") == 1
 

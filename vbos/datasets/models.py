@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 from django.db.models.fields.files import default_storage
 from django.db.models.signals import pre_delete
@@ -7,6 +8,12 @@ from django.dispatch import receiver
 
 UPLOAD_TO = "staging/raster/" if settings.DEBUG else "production/raster/"
 
+TYPE_CHOICES = {
+    "baseline": _("Baseline"),
+    "estimated_damage": _("Estimated Damage"),
+    "aid_resources_needed": _("Resources Needed to be Sent to Those Affected"),
+    "estimate_financial_damage": _("Estimate Financial Damage"),
+}
 
 class Cluster(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -57,6 +64,7 @@ class RasterDataset(models.Model):
         Cluster,
         on_delete=models.PROTECT,
     )
+    type = models.CharField(max_length=55, choices=TYPE_CHOICES, default="baseline")
     source = models.CharField(max_length=155, blank=True, null=True)
     file = models.ForeignKey(RasterFile, on_delete=models.PROTECT)
 
@@ -75,6 +83,7 @@ class VectorDataset(models.Model):
         Cluster,
         on_delete=models.PROTECT,
     )
+    type = models.CharField(max_length=55, choices=TYPE_CHOICES, default="baseline")
     source = models.CharField(max_length=155, blank=True, null=True)
 
     def __str__(self):
@@ -104,6 +113,7 @@ class TabularDataset(models.Model):
         Cluster,
         on_delete=models.PROTECT,
     )
+    type = models.CharField(max_length=55, choices=TYPE_CHOICES, default="baseline")
     source = models.CharField(max_length=155, blank=True, null=True)
 
     def __str__(self):

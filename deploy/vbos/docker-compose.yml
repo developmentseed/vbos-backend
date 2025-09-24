@@ -1,6 +1,17 @@
 services:
   vbos-backend:
     image: ghcr.io/developmentseed/vbos-backend:main
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_AWS_ACCESS_KEY_ID=${DJANGO_AWS_ACCESS_KEY_ID}
@@ -10,7 +21,7 @@ services:
       - DJANGO_SETTINGS_MODULE=vbos.config.production
       - PORT=8000
     ports:
-      - 8080:8000
+      - "8080:8000"
     ipc: host
     networks:
       - caddy

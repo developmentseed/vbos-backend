@@ -41,6 +41,7 @@ class Common(Configuration):
     )
 
     ALLOWED_HOSTS = ["*"]
+    CSRF_TRUSTED_ORIGINS = ["https://vbos-backend.ds.io"]
     ROOT_URLCONF = "vbos.urls"
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
     WSGI_APPLICATION = "vbos.wsgi.application"

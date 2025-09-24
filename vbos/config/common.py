@@ -41,10 +41,16 @@ class Common(Configuration):
     )
 
     ALLOWED_HOSTS = ["*"]
-    CSRF_TRUSTED_ORIGINS = ["https://vbos-backend.ds.io"]
     ROOT_URLCONF = "vbos.urls"
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
     WSGI_APPLICATION = "vbos.wsgi.application"
+
+    # Handle CSRF
+    CSRF_TRUSTED_ORIGINS = ["https://*.ds.io", "http://localhost:8000"]
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True  # Ensure session cookie is sent over HTTPS
+    CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is sent over HTTPS
+    CSRF_COOKIE_HTTPONLY = False  # Allows CSRF cookie to be read by JavaScript
 
     # Email
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

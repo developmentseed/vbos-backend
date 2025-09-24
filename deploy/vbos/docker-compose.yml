@@ -1,16 +1,25 @@
 services:
   vbos-backend:
-    image: ghcr.io/developmentseed/vbos-backend:latest
+    image: ghcr.io/developmentseed/vbos-backend:main
     environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_AWS_ACCESS_KEY_ID=${DJANGO_AWS_ACCESS_KEY_ID}
+      - DJANGO_AWS_SECRET_ACCESS_KEY=${DJANGO_AWS_SECRET_ACCESS_KEY}
+      - DJANGO_AWS_STORAGE_BUCKET_NAME=${DJANGO_AWS_STORAGE_BUCKET_NAME}
+      - DJANGO_DB_URL=${DJANGO_DB_URL}
       - DJANGO_SETTINGS_MODULE=vbos.config.production
+      - PORT=8000
     ports:
-      - 8000:8000
+      - 8080:8000
     ipc: host
     networks:
       - caddy
     labels:
       caddy: vbos-backend.ds.io
       caddy.reverse_proxy: "{{upstreams 8000}}"
+      caddy.handle: "/static/*"
+      caddy.handle.root: "* /www/html"
+      caddy.handle.file_server:
 
 networks:
   caddy:

@@ -11,7 +11,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy_data:/data
+      - /home/devseed/vbos-backend/static:/www/html/static
     restart: unless-stopped
+    # labels:
+    #   caddy.debug:
 
 networks:
   caddy:

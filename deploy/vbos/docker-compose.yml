@@ -1,0 +1,17 @@
+services:
+  vbos-backend:
+    image: ghcr.io/developmentseed/vbos-backend:latest
+    environment:
+      - DJANGO_SETTINGS_MODULE=vbos.config.production
+    ports:
+      - 8000:8000
+    ipc: host
+    networks:
+      - caddy
+    labels:
+      caddy: vbos-backend.ds.io
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+
+networks:
+  caddy:
+    external: true

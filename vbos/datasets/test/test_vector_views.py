@@ -60,17 +60,17 @@ class TestVectorDatasetDataView(APITestCase):
         VectorItem.objects.create(
             dataset=self.dataset_1,
             geometry=Point(80.5, 10.232),
-            metadata={"type": "administrative", "name": "Point 1"},
+            metadata={"type": "administrative", "name": "Point 1", "area": 5000},
         )
         VectorItem.objects.create(
             dataset=self.dataset_1,
             geometry=LineString([(0, 0), (0, 3), (3, 3), (3, 0), (6, 6), (0, 0)]),
-            metadata={"type": "administrative", "name": "Line 123"},
+            metadata={"type": "administrative", "name": "Line 123", "area": 5321},
         )
         VectorItem.objects.create(
             dataset=self.dataset_2,
             geometry=Polygon([(0, 0), (0, 3), (3, 3), (3, 0), (0, 0)]),
-            metadata={"type": "administrative", "name": "Area 1"},
+            metadata={"type": "administrative", "name": "Area 1", "area": 3432},
         )
         self.url = reverse("datasets:vector-data", args=[self.dataset_1.id])
 
@@ -109,3 +109,24 @@ class TestVectorDatasetDataView(APITestCase):
             "coordinates": [80.5, 10.232],
         }
         assert req.data.get("features")[0]["properties"]["name"] == "Point 1"
+
+        # filter by metadata
+        req = self.client.get(self.url, {"filter": "name__icontains=Point"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1
+
+        req = self.client.get(self.url, {"filter": "area__lt=5000"})
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 0
+
+        req = self.client.get(
+            self.url, {"filter": "area__gte=5000, type=administrative"}
+        )
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 2
+
+        req = self.client.get(
+            self.url, {"filter": "area__gte=5000", "in_bbox": "80,10,81,11"}
+        )
+        assert req.status_code == status.HTTP_200_OK
+        assert req.data.get("count") == 1

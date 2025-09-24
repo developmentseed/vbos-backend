@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import django_filters.rest_framework
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework_gis.pagination import GeoJsonPagination
@@ -7,7 +8,9 @@ from rest_framework_gis.filters import InBBoxFilter
 from vbos.datasets.filters import (
     RasterDatasetFilter,
     TabularDatasetFilter,
+    TabularItemFilter,
     VectorDatasetFilter,
+    VectorItemFilter,
 )
 
 from .models import (
@@ -70,7 +73,11 @@ class VectorDatasetDataView(ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = GeoJsonPagination
     bbox_filter_field = "geometry"
-    filter_backends = (InBBoxFilter,)
+    filterset_class = VectorItemFilter
+    filter_backends = (
+        InBBoxFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+    )
 
     def get_queryset(self):
         return VectorItem.objects.filter(dataset=self.kwargs.get("pk"))
@@ -91,6 +98,7 @@ class TabularDatasetDetailView(RetrieveAPIView):
 
 
 class TabularDatasetDataView(ListAPIView):
+    filterset_class = TabularItemFilter
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):

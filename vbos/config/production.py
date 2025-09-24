@@ -41,3 +41,9 @@ class Production(Common):
     AWS_HEADERS = {
         "Cache-Control": "max-age=86400, s-maxage=86400, must-revalidate",
     }
+
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "https://vbos.ds.io/",
+    ]

@@ -26,6 +26,29 @@ class Cluster(models.Model):
         ordering = ["name"]
 
 
+class Province(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    geometry = models.GeometryField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ["name"]
+
+
+class AreaCouncil(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    province = models.ForeignKey(Province, null=False, on_delete=models.PROTECT)
+    geometry = models.GeometryField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ["name"]
+
+
 class RasterFile(models.Model):
     name = models.CharField(max_length=155, unique=True)
     created = models.DateTimeField(auto_now_add=True)
